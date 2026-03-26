@@ -1,23 +1,43 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      path: "/",
+      redirect: "/login",
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: "/login",
+      name: "login",
+      component: () => import("../views/auth/LoginView.vue"),
+    },
+    {
+      path: "/registro",
+      name: "registro",
+      component: () => import("../views/auth/RegistroView.vue"),
+    },
+    {
+      path: "/clima",
+      name: "clima",
+      component: () => import("../views/ClimaView.vue"),
+      meta: { requiresAuth: true },
     },
   ],
-})
+});
 
-export default router
+// Navigation Guard
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next("/login");
+  } else if ((to.path === "/login" || to.path === "/registro") && authStore.isAuthenticated) {
+    next("/clima");
+  } else {
+    next();
+  }
+});
+
+export default router;
