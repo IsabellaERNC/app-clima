@@ -18,7 +18,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/clima", climaRoutes);
 
 app.get("/", (req, res) => {
-  res.json({ message: "Backend App de Clima funcionando ✅" });
+  res.json({ message: "Backend App de Clima funcionando " });
 });
 
 app.listen(3000, () => {
