@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="auth-container">
     <div class="auth-card">
@@ -131,3 +132,5 @@ a {
   font-weight: bold;
 }
 </style>
+
+```
