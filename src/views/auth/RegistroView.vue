@@ -1,69 +1,95 @@
 <template>
+  <!-- Contenedor principal que centra todo en la pantalla -->
   <div class="auth-container">
     <div class="auth-card">
       <h2>🌤️ App de Clima</h2>
       <h3>Crear Cuenta</h3>
 
+      <!-- v-if="error" → solo muestra este div si hay un error -->
       <div v-if="error" class="error">{{ error }}</div>
 
+      <!-- @submit.prevent → evita que la página se recargue
+           y llama a handleRegistro() -->
       <form @submit.prevent="handleRegistro">
         <div class="form-group">
           <label>Nombre</label>
+          <!-- v-model="nombre" → conecta con la variable nombre -->
           <input v-model="nombre" type="text" placeholder="Tu nombre" required />
         </div>
 
         <div class="form-group">
           <label>Email</label>
+          <!-- v-model="email" → conecta con la variable email -->
           <input v-model="email" type="email" placeholder="tu@email.com" required />
         </div>
 
         <div class="form-group">
           <label>Contraseña</label>
+          <!-- v-model="password" → conecta con la variable password -->
           <input v-model="password" type="password" placeholder="••••••" required />
         </div>
 
+        <!-- :disabled="cargando" → deshabilita el botón mientras carga -->
         <button type="submit" :disabled="cargando">
           {{ cargando ? "Cargando..." : "Registrarse" }}
         </button>
       </form>
 
+      <!-- Si ya tiene cuenta, lo manda al login -->
       <p>¿Ya tienes cuenta? <router-link to="/login">Inicia sesión</router-link></p>
     </div>
   </div>
 </template>
 
 <script>
+// Importamos el store de autenticación
 import { useAuthStore } from "../../stores/auth";
 
 export default {
   name: "RegistroView",
+
+  // Variables reactivas del componente
   data() {
     return {
-      nombre: "",
-      email: "",
-      password: "",
-      error: "",
-      cargando: false,
+      nombre: "", // guarda el nombre que escribe el usuario
+      email: "", // guarda el email
+      password: "", // guarda la contraseña
+      error: "", // guarda el mensaje de error
+      cargando: false, // controla si el botón está deshabilitado
     };
   },
+
   methods: {
+    // Función que se ejecuta cuando el usuario hace clic en "Registrarse"
     async handleRegistro() {
+      // Limpiamos el error anterior
       this.error = "";
+
+      // Activamos el estado de cargando
       this.cargando = true;
+
       try {
+        // Obtenemos el store de autenticación
         const authStore = useAuthStore();
+
+        // Llamamos a la función registro del store
+        // que hace la petición al backend con nombre, email y password
         await authStore.registro(this.nombre, this.email, this.password);
+
+        // Si el registro fue exitoso, navegamos al clima
         this.$router.push("/clima");
       } catch (e) {
+        // Si hubo error, mostramos el mensaje
         this.error = "Error al registrarse, intenta de nuevo";
       } finally {
+        // Se ejecuta siempre, haya error o no
+        // Desactivamos el estado de cargando
         this.cargando = false;
       }
     },
   },
 };
 </script>
-
 <style scoped>
 .auth-container {
   min-height: 100vh;

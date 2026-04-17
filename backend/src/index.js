@@ -4,9 +4,9 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.js";
 import climaRoutes from "./routes/clima.js";
+import favoritosRoutes from "./routes/favoritos.js";
 
 dotenv.config();
-
 connectDB();
 
 const app = express();
@@ -16,6 +16,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/clima", climaRoutes);
+app.use("/api/favoritos", favoritosRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend App de Clima funcionando " });
