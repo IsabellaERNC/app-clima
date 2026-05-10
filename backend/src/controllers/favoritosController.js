@@ -15,7 +15,7 @@ export const agregarFavorito = async (req, res) => {
   try {
     const { ciudad } = req.body;
 
-    // Verificamos si la ciudad ya está en favoritos
+    // Verificamos si la ciudad ya esta en favoritos
     const yaExiste = await Favorito.findOne({
       usuario: req.usuario.id,
       ciudad: ciudad,

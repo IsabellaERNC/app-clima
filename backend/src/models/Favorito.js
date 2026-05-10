@@ -16,7 +16,7 @@ const favoritoSchema = new mongoose.Schema(
       trim: true,
     },
   },
-  // Agrega createdAt y updatedAt automáticamente
+  // Agrega createdAt y updatedAt automticamente
   { timestamps: true },
 );
 

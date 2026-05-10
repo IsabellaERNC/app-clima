@@ -1,18 +1,17 @@
 // Importamos defineStore de Pinia para crear el store
-// Pinia es el manejador de estado global de Vue 3
-// Es lo que pide el profe: "Uso de Pinia para gestionar la sesión"
+// Pinia es el manejador de estado global de Vue uso de Pinia para gestionar la sesion
 import { defineStore } from "pinia";
 
 // Importamos api (axios configurado) para hacer peticiones al backend
 import api from "../services/api";
 
 // Creamos el store llamado "auth"
-// Este store maneja todo lo relacionado con la sesión del usuario
+// Este store maneja todo lo relacionado con la sesion del usuario
 // Cualquier componente de Vue puede acceder a este store
 export const useAuthStore = defineStore("auth", {
-  // ==========================================
-  // STATE - son los datos que guardamos
-  // ==========================================
+  
+  // STATE - son los datos que guardamos-----------
+
   state: () => ({
     // Leemos el usuario de localStorage cuando la app arranca
     // JSON.parse convierte el texto guardado en un objeto JavaScript
@@ -20,17 +19,17 @@ export const useAuthStore = defineStore("auth", {
     usuario: JSON.parse(localStorage.getItem("usuario")) || null,
 
     // Leemos el token de localStorage cuando la app arranca
-    // Así el usuario no tiene que loguearse cada vez que abre la app
+    // Asi el usuario no tiene que loguearse cada vez que abre la app
     token: localStorage.getItem("token") || null,
   }),
 
-  // ==========================================
-  // GETTERS - son datos calculados del state
-  // ==========================================
+ 
+  // GETTERS - son datos calculados del state-------
+  
   getters: {
-    // isAuthenticated → devuelve true si hay token, false si no hay
+    // isAuthenticated devuelve true si hay token, false si no hay
     // !! convierte cualquier valor a true o false
-    // Se usa para saber si el usuario está logueado
+    // Se usa para saber si el usuario esta logueado
     isAuthenticated: (state) => !!state.token,
 
     // isAdmin → devuelve true si el rol del usuario es "admin"
@@ -38,12 +37,11 @@ export const useAuthStore = defineStore("auth", {
     isAdmin: (state) => state.usuario?.rol === "admin",
   },
 
-  // ==========================================
-  // ACTIONS - son las funciones que modifican el state
-  // ==========================================
+  // ACTIONS - son las funciones que modifican el state---
+
   actions: {
-    // Función de login
-    // Recibe email y password, llama al backend y guarda la sesión
+    // Funcion de login
+    // Recibe email y password, llama al backend y guarda la sesion
     async login(email, password) {
       // Llamamos al backend POST /api/auth/login
       const response = await api.post("/auth/login", { email, password });
@@ -52,14 +50,14 @@ export const useAuthStore = defineStore("auth", {
       this.token = response.data.token;
       this.usuario = response.data.usuario;
 
-      // También guardamos en localStorage para que
-      // la sesión persista cuando el usuario cierra y abre el navegador
+      // Tambien guardamos en localStorage para que
+      // la sesion persista cuando el usuario cierra y abre el navegador
       localStorage.setItem("token", this.token);
       localStorage.setItem("usuario", JSON.stringify(this.usuario));
     },
 
-    // Función de registro
-    // Recibe nombre, email y password, llama al backend y guarda la sesión
+    // Funcion de registro
+    // Recibe nombre, email y password, llama al backend y guarda la sesion
     async registro(nombre, email, password) {
       // Llamamos al backend POST /api/auth/registro
       const response = await api.post("/auth/registro", { nombre, email, password });
@@ -71,14 +69,14 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("usuario", JSON.stringify(this.usuario));
     },
 
-    // Función de logout (cerrar sesión)
+    // Función de logout (cerrar sesion)
     logout() {
       // Borramos el token y usuario del state de Pinia
       this.token = null;
       this.usuario = null;
 
-      // También los borramos del localStorage
-      // Así el usuario queda completamente deslogueado
+      // Tambien los borramos del localStorage
+      // Asi el usuario queda completamente deslogueado
       localStorage.removeItem("token");
       localStorage.removeItem("usuario");
     },

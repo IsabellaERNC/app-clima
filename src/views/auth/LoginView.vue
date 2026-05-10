@@ -2,15 +2,15 @@
   <!-- Contenedor principal que centra todo en la pantalla -->
   <div class="auth-container">
     <div class="auth-card">
-      <h2>App de Clima</h2>
+      <h2>🌤️App de Clima</h2>
       <h3>Iniciar Sesión</h3>
 
-      <!-- v-if="error" → solo muestra este div si hay un error -->
-      <!-- {{ error }} → muestra el mensaje de error -->
+      <!-- v-if="error"  solo muestra este div si hay un error -->
+      <!-- {{ error }}  muestra el mensaje de error -->
       <div v-if="error" class="error">{{ error }}</div>
 
-      <!-- @submit.prevent → cuando el usuario envía el formulario
-           .prevent evita que la página se recargue (comportamiento normal de HTML)
+      <!-- @submit.prevent  cuando el usuario envia el formulario
+           .prevent evita que la pagina se recargue (comportamiento normal de HTML)
            y en vez de eso llama a handleLogin() -->
       <form @submit.prevent="handleLogin">
         <div class="form-group">
@@ -26,31 +26,31 @@
           <input v-model="password" type="password" placeholder="••••••" required />
         </div>
 
-        <!-- :disabled="cargando" → deshabilita el botón mientras carga
+        <!-- :disabled="cargando" → deshabilita el boton mientras carga
              Evita que el usuario haga clic varias veces -->
         <!-- {{ cargando ? "Cargando..." : "Entrar" }} → 
-             Si está cargando muestra "Cargando...", si no muestra "Entrar" -->
+             Si esta cargando muestra "Cargando...", si no muestra "Entrar" -->
         <button type="submit" :disabled="cargando">
           {{ cargando ? "Cargando..." : "Entrar" }}
         </button>
       </form>
 
       <!-- router-link → es como un <a> pero para Vue Router
-           Navega a /registro sin recargar la página -->
+           Navega a /registro sin recargar la pagina -->
       <p>¿No tienes cuenta? <router-link to="/registro">Regístrate</router-link></p>
     </div>
   </div>
 </template>
 
 <script>
-// Importamos el store de autenticación
+// Importamos el store de autenticacion
 import { useAuthStore } from "../../stores/auth";
 
 export default {
   name: "LoginView",
 
   // data() → variables reactivas del componente
-  // Cuando cambian, Vue actualiza la pantalla automáticamente
+  // Cuando cambian, Vue actualiza la pantalla automaticamente
   data() {
     return {
       email: "", // guarda lo que escribe el usuario en el input email
@@ -61,7 +61,7 @@ export default {
   },
 
   methods: {
-    // Función que se ejecuta cuando el usuario hace clic en "Entrar"
+    // Funcion que se ejecuta cuando el usuario hace clic en "Entrar"
     async handleLogin() {
       // Limpiamos el error anterior
       this.error = "";
@@ -70,11 +70,11 @@ export default {
       this.cargando = true;
 
       try {
-        // Obtenemos el store de autenticación
+        // Obtenemos el store de autenticacion
         const authStore = useAuthStore();
 
-        // Llamamos a la función login del store
-        // que hace la petición al backend y guarda el token
+        // Llamamos a la funcion login del store
+        // que hace la peticion al backend y guarda el token
         await authStore.login(this.email, this.password);
 
         // Si el login fue exitoso, navegamos a la pantalla del clima
@@ -149,7 +149,7 @@ button:disabled {
   opacity: 0.6;
 }
 .error {
-  background: #fee;
+  background: rgb(0, 0, 0);
   color: #c00;
   padding: 0.5rem;
   border-radius: 8px;

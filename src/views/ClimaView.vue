@@ -1,96 +1,86 @@
 <template>
   <div class="clima-container">
-    <!-- Barra de navegación superior -->
+    <!-- Barra de navegacion superior -->
     <nav class="navbar">
-      <h1>App de Clima</h1>
+      <h1>🌤️ App de Clima</h1>
       <div class="nav-right">
-        <!-- authStore.usuario?.nombre → muestra el nombre del usuario logueado
-             El "?" evita error si usuario es null -->
+        <router-link to="/favoritos">⭐ Favoritos</router-link>
         <span>Hola, {{ authStore.usuario?.nombre }}</span>
-
-        <!-- Botón para cerrar sesión -->
         <button @click="handleLogout">Cerrar sesión</button>
       </div>
     </nav>
 
     <div class="content">
-      <!-- Caja de búsqueda -->
+      <!-- Caja de busqueda centrada arriba -->
       <div class="search-box">
-        <!-- v-model="ciudad" → conecta con la variable ciudad
-             @keyup.enter → busca cuando el usuario presiona Enter -->
         <input
           v-model="ciudad"
           @keyup.enter="buscarClima"
           type="text"
-          placeholder="Busca una ciudad..."
+          placeholder="🔍 Busca una ciudad..."
         />
-        <!-- :disabled="cargando" → deshabilita mientras carga -->
         <button @click="buscarClima" :disabled="cargando">
-          {{ cargando ? "..." : "🔍" }}
+          {{ cargando ? "..." : "Buscar" }}
         </button>
       </div>
 
-      <!-- v-if="error" → solo muestra si hay error -->
+      <!-- Error -->
       <div v-if="error" class="error">{{ error }}</div>
 
-      <!-- v-if="clima" → solo muestra la card si ya buscó una ciudad -->
-      <div v-if="clima" class="clima-card">
-        <h2>{{ clima.ciudad }}</h2>
-
-        <!-- Ícono del clima que viene de OpenWeatherMap -->
-        <!-- :src → construye la URL del ícono dinámicamente -->
-        <img
-          :src="`https://openweathermap.org/img/wn/${clima.icono}@2x.png`"
-          :alt="clima.descripcion"
-        />
-
-        <!-- Math.round → redondea la temperatura a número entero -->
-        <p class="temperatura">{{ Math.round(clima.temperatura) }}°C</p>
-        <p class="descripcion">{{ clima.descripcion }}</p>
-
-        <div class="detalles">
-          <div>
-            <span>Humedad</span>
-            <span>{{ clima.humedad }}%</span>
+      <!-- Layout de dos columnas -->
+      <div class="grid-layout">
+        <!-- Columna izquierda - resultado del clima -->
+        <div class="columna-izquierda">
+          <div v-if="clima" class="clima-card">
+            <h2>{{ clima.ciudad }}</h2>
+            <img
+              :src="`https://openweathermap.org/img/wn/${clima.icono}@2x.png`"
+              :alt="clima.descripcion"
+            />
+            <p class="temperatura">{{ Math.round(clima.temperatura) }}°C</p>
+            <p class="descripcion">{{ clima.descripcion }}</p>
+            <div class="detalles">
+              <div>
+                <span>💧 Humedad</span>
+                <span>{{ clima.humedad }}%</span>
+              </div>
+              <div>
+                <span>🌡️ Sensación</span>
+                <span>{{ Math.round(clima.sensacion) }}°C</span>
+              </div>
+            </div>
+            <button class="agregar-fav-btn" @click="agregarFavorito">⭐ Agregar a favoritos</button>
+            <!-- Mensaje cuando se agrega o ya existe un favorito -->
+            <p v-if="mensajeFavorito" class="mensaje-favorito">
+              {{ mensajeFavorito }}
+            </p>
           </div>
-          <div>
-            <span>Sensación</span>
-            <span>{{ Math.round(clima.sensacion) }}°C</span>
-          </div>
-        </div>
-      </div>
 
-      <!-- Botón para agregar a favoritos -->
-      <div v-if="clima" class="favorito-btn">
-        <button @click="agregarFavorito">⭐ Agregar a favoritos</button>
-      </div>
-
-      <!-- Lista de favoritos -->
-      <div v-if="favoritos.length > 0" class="favoritos">
-        <h3>⭐ Ciudades Favoritas</h3>
-        <div class="favoritos-lista">
-          <div v-for="item in favoritos" :key="item._id" class="favorito-item">
-            <span @click="buscarDesdeHistorial(item.ciudad)">{{ item.ciudad }}</span>
-            <button @click="eliminarFavorito(item._id)">🗑️</button>
+          <!-- Mensaje cuando no hay búsqueda -->
+          <div v-else class="sin-busqueda">
+            <p>🌍 Busca una ciudad para ver el clima</p>
           </div>
         </div>
-      </div>
 
-      <!-- v-if="historial.length > 0" → solo muestra si hay búsquedas guardadas -->
-      <div v-if="historial.length > 0" class="historial">
-        <h3>Historial de búsquedas</h3>
-        <div class="historial-lista">
-          <!-- v-for → repite un div por cada búsqueda del historial -->
-          <!-- :key → identificador único de cada item -->
-          <!-- @click → al hacer clic busca esa ciudad de nuevo -->
-          <div
-            v-for="item in historial"
-            :key="item._id"
-            class="historial-item"
-            @click="buscarDesdeHistorial(item.ciudad)"
-          >
-            <span>{{ item.ciudad }}</span>
-            <span>{{ Math.round(item.temperatura) }}°C</span>
+        <!-- Columna derecha - historial -->
+        <div class="columna-derecha">
+          <div v-if="historial.length > 0" class="historial">
+            <h3>🕒 Historial de búsquedas</h3>
+            <div class="historial-lista">
+              <div
+                v-for="item in historial"
+                :key="item._id"
+                class="historial-item"
+                @click="buscarDesdeHistorial(item.ciudad)"
+              >
+                <span>{{ item.ciudad }}</span>
+                <span>{{ Math.round(item.temperatura) }}°C</span>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="sin-historial">
+            <p>📋 Tu historial aparecerá aquí</p>
           </div>
         </div>
       </div>
@@ -99,7 +89,7 @@
 </template>
 
 <script>
-// Importamos el store para saber quién está logueado
+// Importamos el store para saber quien esta logueado
 import { useAuthStore } from "../stores/auth";
 
 // Importamos api (axios) para hacer peticiones al backend
@@ -112,25 +102,26 @@ export default {
     return {
       ciudad: "", // ciudad que escribe el usuario
       clima: null, // datos del clima que devuelve el backend
-      historial: [], // lista de búsquedas anteriores
+      historial: [], // lista de busquedas anteriores
       error: "", // mensaje de error si hay uno
-      cargando: false, // controla si el botón está deshabilitado
-      authStore: useAuthStore(), // accedemos al store de autenticación
+      cargando: false, // controla si el botón esta deshabilitado
+      authStore: useAuthStore(), // accedemos al store de autenticacion
       favoritos: [],
+      mensajeFavorito: "", //nuevo
     };
   },
 
   // mounted → se ejecuta cuando el componente carga
-  // Cargamos el historial automáticamente al entrar
+  // Cargamos el historial automaticamente al entrar
   mounted() {
     this.cargarHistorial();
     this.cargarFavoritos();
   },
 
   methods: {
-    // Función para buscar el clima de una ciudad
+    // Funcion para buscar el clima de una ciudad
     async buscarClima() {
-      // Si el input está vacío, no hacemos nada
+      // Si el input esta vacio, no hacemos nada
       if (!this.ciudad.trim()) return;
 
       this.error = "";
@@ -138,13 +129,13 @@ export default {
 
       try {
         // Llamamos al backend GET /api/clima/Cali
-        // api.js agrega el token automáticamente
+        // api.js agrega el token automaticamente
         const response = await api.get(`/clima/${this.ciudad}`);
 
         // Guardamos los datos del clima
         this.clima = response.data;
 
-        // Actualizamos el historial con la nueva búsqueda
+        // Actualizamos el historial con la nueva busqueda
         await this.cargarHistorial();
       } catch (e) {
         this.error = "Ciudad no encontrada";
@@ -153,7 +144,7 @@ export default {
       }
     },
 
-    // Función para cargar el historial de búsquedas
+    // Funcion para cargar el historial de busquedas
     async cargarHistorial() {
       try {
         // Llamamos al backend GET /api/clima/historial/mis-busquedas
@@ -166,7 +157,7 @@ export default {
       }
     },
 
-    // Función para buscar desde el historial
+    // Funcion para buscar desde el historial
     // Cuando el usuario hace clic en una ciudad del historial
     buscarDesdeHistorial(ciudad) {
       // Ponemos la ciudad en el input
@@ -189,9 +180,12 @@ export default {
     async agregarFavorito() {
       try {
         await api.post("/favoritos", { ciudad: this.clima.ciudad });
+        //mostar mensaje de exitp
+        this.mensajeFavorito = "⭐ Ciudad agregada a favoritos exitosamente";
         await this.cargarFavoritos();
       } catch (e) {
-        alert("Esta ciudad ya está en favoritos");
+        //mostramos mensaje si ya existe
+        this.mensajeFavorito = "⚠️ Esta ciudad ya está en favoritos";
       }
     },
 
@@ -205,7 +199,7 @@ export default {
       }
     },
 
-    // Función para cerrar sesión
+    // Funcion para cerrar sesion
     handleLogout() {
       // Borramos el token y usuario del store y localStorage
       this.authStore.logout();
@@ -230,14 +224,22 @@ export default {
   backdrop-filter: blur(10px);
 }
 .navbar h1 {
-  color: white;
+  color: rgb(0, 0, 0);
   margin: 0;
 }
 .nav-right {
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: white;
+  color: rgb(0, 0, 0);
+}
+.nav-right a {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
 }
 .nav-right button {
   padding: 0.4rem 1rem;
@@ -248,29 +250,57 @@ export default {
   font-weight: bold;
 }
 .content {
-  max-width: 600px;
+  max-width: 1100px;
   margin: 2rem auto;
   padding: 0 1rem;
 }
 .search-box {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .search-box input {
   flex: 1;
-  padding: 0.8rem;
+  padding: 1rem 1.5rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 50px;
   font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 .search-box button {
-  padding: 0.8rem 1.2rem;
+  padding: 1rem 2rem;
   background: white;
   border: none;
-  border-radius: 10px;
-  font-size: 1.2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.search-box button:disabled {
+  opacity: 0.6;
+}
+.error {
+  background: #fee;
+  color: #c00;
+  padding: 0.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
 }
 .clima-card {
   background: rgba(255, 255, 255, 0.3);
@@ -278,8 +308,7 @@ export default {
   border-radius: 20px;
   padding: 2rem;
   text-align: center;
-  color: white;
-  margin-bottom: 1.5rem;
+  color: rgb(0, 0, 0);
 }
 .clima-card h2 {
   font-size: 2rem;
@@ -298,7 +327,7 @@ export default {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin-top: 1rem;
+  margin: 1rem 0;
 }
 .detalles div {
   display: flex;
@@ -306,12 +335,30 @@ export default {
   align-items: center;
   gap: 0.3rem;
 }
+.agregar-fav-btn {
+  padding: 0.6rem 1.5rem;
+  background: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+.sin-busqueda {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+}
 .historial {
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 1.5rem;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 .historial h3 {
   margin: 0 0 1rem 0;
@@ -319,62 +366,29 @@ export default {
 .historial-item {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem;
+  padding: 0.7rem;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .historial-item:hover {
   background: rgba(255, 255, 255, 0.2);
 }
-.error {
-  background: #fee;
-  color: #c00;
-  padding: 0.5rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-.favorito-btn {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-.favorito-btn button {
-  padding: 0.6rem 1.5rem;
-  background: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  cursor: pointer;
-  font-weight: bold;
-}
-.favoritos {
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 1.5rem;
-  color: white;
-  margin-top: 1.5rem;
-}
-.favoritos h3 {
-  margin: 0 0 1rem 0;
-}
-.favorito-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.favorito-item:hover {
+.sin-historial {
   background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 3rem;
+  text-align: center;
+  color: white;
 }
-.favorito-item button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
+.mensaje-favorito {
+  text-align: center;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  margin-top: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  border-radius: 8px;
 }
 </style>

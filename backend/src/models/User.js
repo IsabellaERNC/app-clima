@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 // como se ve un usuario en la base de datos
 const userSchema = new mongoose.Schema(
   {
-    // required: true es obligatorio, no puede estar vacio
     // trim: true elimina espacios al inicio y al final
     nombre: {
       type: String,
@@ -14,8 +13,6 @@ const userSchema = new mongoose.Schema(
     },
 
     // Campo email:
-    // type: String es texto
-    // required: true es obligatorio
     // unique: true no puede haber dos usuarios con el mismo email
     // trim: true elimina espacios
     // lowercase: true convierte a minusculas automaticamente
@@ -27,19 +24,16 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
     },
 
-    // Campo password:
-    // type: String es texto
+    // Campo password
     // required: true es obligatorio
-    // Nota: aquí se guarda la contraseña YA encriptada con bcrypt
+    // aqui se guarda la contraseña YA encriptada con bcrypt
     password: {
       type: String,
       required: true,
     },
 
     // Campo rol:
-    // type: String → es texto
-    // enum solo puede ser "admin" o "usuario", nada más
-    // default: "usuario" → si no se especifica, por defecto es "usuario"
+    // enum solo puede ser "admin" o "usuario"
     rol: {
       type: String,
       enum: ["admin", "usuario"],
@@ -47,11 +41,11 @@ const userSchema = new mongoose.Schema(
     },
   },
 
-  // timestamps: true → MongoDB agrega automáticamente
-  // createdAt (fecha de creación) y updatedAt (fecha de actualización)
+  // timestamps: true MongoDB agrega automaticamente
+  // createdAt fecha de creacion y updatedAt fecha de actualizacion
   { timestamps: true },
 );
 
 // Exportamos el modelo llamado "User"
-// Esto crea una colección llamada "users" en MongoDB
+// Esto crea una coleccion llamada "users" en MongoDB
 export default mongoose.model("User", userSchema);

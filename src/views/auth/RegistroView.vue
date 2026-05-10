@@ -8,7 +8,7 @@
       <!-- v-if="error" → solo muestra este div si hay un error -->
       <div v-if="error" class="error">{{ error }}</div>
 
-      <!-- @submit.prevent → evita que la página se recargue
+      <!-- @submit.prevent → evita que la pagina se recargue
            y llama a handleRegistro() -->
       <form @submit.prevent="handleRegistro">
         <div class="form-group">
@@ -29,7 +29,7 @@
           <input v-model="password" type="password" placeholder="••••••" required />
         </div>
 
-        <!-- :disabled="cargando" → deshabilita el botón mientras carga -->
+        <!-- :disabled="cargando" → deshabilita el boton mientras carga -->
         <button type="submit" :disabled="cargando">
           {{ cargando ? "Cargando..." : "Registrarse" }}
         </button>
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-// Importamos el store de autenticación
+// Importamos el store de autenticacion
 import { useAuthStore } from "../../stores/auth";
 
 export default {
@@ -55,12 +55,12 @@ export default {
       email: "", // guarda el email
       password: "", // guarda la contraseña
       error: "", // guarda el mensaje de error
-      cargando: false, // controla si el botón está deshabilitado
+      cargando: false, // controla si el boton esta deshabilitado
     };
   },
 
   methods: {
-    // Función que se ejecuta cuando el usuario hace clic en "Registrarse"
+    // Funcion que se ejecuta cuando el usuario hace clic en "Registrarse"
     async handleRegistro() {
       // Limpiamos el error anterior
       this.error = "";
@@ -69,11 +69,11 @@ export default {
       this.cargando = true;
 
       try {
-        // Obtenemos el store de autenticación
+        // Obtenemos el store de autenticacion
         const authStore = useAuthStore();
 
-        // Llamamos a la función registro del store
-        // que hace la petición al backend con nombre, email y password
+        // Llamamos a la funcion registro del store
+        // que hace la peticion al backend con nombre, email y password
         await authStore.registro(this.nombre, this.email, this.password);
 
         // Si el registro fue exitoso, navegamos al clima
