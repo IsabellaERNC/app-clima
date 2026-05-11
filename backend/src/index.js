@@ -5,6 +5,7 @@ import connectDB from "./config/db.js"; // Funcion para conectar a la base de da
 import authRoutes from "./routes/auth.js"; // Rutas de autenticacion
 import climaRoutes from "./routes/clima.js";
 import favoritosRoutes from "./routes/favoritos.js";
+import adminRoutes from "./routes/admin.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 // Cargamos las variables de entorno
@@ -20,6 +21,7 @@ app.use(express.json()); // Permite recibir datos en formato JSON
 app.use("/api/auth", authRoutes);
 app.use("/api/clima", climaRoutes);
 app.use("/api/favoritos", favoritosRoutes);
+app.use("/api/admin", adminRoutes);
 
 //ruta de prueba ppara ver si el servidor funciona
 app.get("/", (req, res) => {

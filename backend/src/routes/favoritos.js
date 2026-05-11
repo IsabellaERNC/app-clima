@@ -1,20 +1,20 @@
-import { Router } from "express";       // Importamos Router desde express la cual sirve para crear rutas separadas
-import {getFavoritos,agregarFavorito,eliminarFavorito,} from "../controllers/favoritosController.js";
-
-// Importamos el middleware que verifica el token "usuario autenticado
+import { Router } from "express";
+import {
+  getFavoritos,
+  agregarFavorito,
+  eliminarFavorito,
+} from "../controllers/favoritosController.js";
 import { verificarToken } from "../middlewares/auth.js";
+import { validar } from "../middlewares/validar.js";
+import { favoritoSchema } from "../schemas/favoritoSchema.js";
 
 const router = Router();
 
-//------------RUTAS-----------
-
 // Obtener todos los favoritos del usuario
 router.get("/", verificarToken, getFavoritos);
-// Primero pasa por el middlewarede seguridad
-// Luego ejecuta la funcion del controlador
 
-// Agregar una ciudad a favoritos
-router.post("/", verificarToken, agregarFavorito);
+// Agregar una ciudad a favoritos - valida los datos antes
+router.post("/", verificarToken, validar(favoritoSchema), agregarFavorito);
 
 // Eliminar una ciudad de favoritos
 router.delete("/:id", verificarToken, eliminarFavorito);

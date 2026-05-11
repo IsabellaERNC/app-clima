@@ -5,6 +5,12 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: "/admin",
+      name: "admin",
+      component: () => import("../views/AdminView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: "/",
       redirect: "/login",
     },
@@ -45,11 +51,13 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next("/login");
+  } else if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    // Si intenta entrar a admin sin ser admin, lo manda al clima
+    next("/clima");
   } else if ((to.path === "/login" || to.path === "/registro") && authStore.isAuthenticated) {
     next("/clima");
   } else {
     next();
   }
 });
-
 export default router;

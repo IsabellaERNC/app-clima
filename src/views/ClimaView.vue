@@ -4,6 +4,8 @@
     <nav class="navbar">
       <h1>🌤️ App de Clima</h1>
       <div class="nav-right">
+        <!-- Solo se muestra si el usuario es admin -->
+        <router-link v-if="authStore.isAdmin" to="/admin">⚙️ Admin</router-link>
         <router-link to="/favoritos">⭐ Favoritos</router-link>
         <span>Hola, {{ authStore.usuario?.nombre }}</span>
         <button @click="handleLogout">Cerrar sesión</button>
